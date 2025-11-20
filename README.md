@@ -28,4 +28,10 @@ jQuery популярен в UI из-за простоты: селекторы �
 ### 4. Почему jQuery используется в интерфейсах? (повтор)
 В интерфейсах jQuery ускоряет разработку: chaining (`.find().addClass().fadeIn()`) — читаемо, как "предложение". UI-виджеты (datepicker/dialog) — готовые, с темами. Для динамичных элементов (табы, модалы) — меньше boilerplate. Сегодня — для простых сайтов (как наш), где vanilla слишком verbose для новичков.
 
-- Скриншоты: [табы](screenshots/tabs.png), [цитата](screenshots/quote.png), [draggable](screenshots/draggable.png), [галерея](screenshots/gallery.png).
+- Скриншоты:
+<img width="1066" height="316" alt="image" src="https://github.com/user-attachments/assets/eda1085e-2e24-41d1-afff-46b3fb74cbcc" />
+<img width="702" height="480" alt="image" src="https://github.com/user-attachments/assets/7e8094d0-cab8-426f-9980-3fdf59299a4f" />
+<img width="884" height="181" alt="image" src="https://github.com/user-attachments/assets/04dc099b-b1b4-49c6-9503-757a226b0031" />
+
+
+
