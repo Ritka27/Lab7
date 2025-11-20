@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Музыкальная школа №1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        beige: {
+                            100: '#F5F5DC',
+                            200: '#EDE4D4',
+                        },
+                        burgundy: {
+                            600: '#8B0000',
+                            700: '#800020',
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.8s ease-out',
+                        'slide-up': 'slideUp 0.6s ease-out',
+                        'pulse-soft': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'glow-pulse': 'glowPulse 2s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(50px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        glowPulse: {
+                            '0%': { textShadow: '0 0 10px rgba(128, 0, 32, 0.3)' },
+                            '100%': { textShadow: '0 0 20px rgba(128, 0, 32, 0.6), 0 0 30px rgba(128, 0, 32, 0.2)' },
+                        }
+                    },
+                    boxShadow: {
+                        'glow': '0 0 20px rgba(128, 0, 32, 0.3)',
+                        'card-hover': '0 20px 40px rgba(139, 0, 0, 0.15)',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Подключение jQuery UI CSS (после Tailwind, чтобы переопределять) -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <style>
+        /* Только минимальные кастомные стили, которые сложно в Tailwind (hover и transitions) */
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(0);
+        }
+        .card-hover:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(139, 0, 0, 0.15);
+            border-color: #800020;
+        }
+        .card-hover:hover .price-tag {
+            background: linear-gradient(135deg, #800020, #A52A2A);
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(128, 0, 32, 0.3);
+        }
+        .glow-text {
+            text-shadow: 0 0 10px rgba(128, 0, 32, 0.3);
+            transition: text-shadow 0.3s ease;
+        }
+        .glow-text:hover {
+            text-shadow: 0 0 20px rgba(128, 0, 32, 0.5), 0 0 30px rgba(128, 0, 32, 0.2);
+        }
+        .list-item {
+            transition: transform 0.2s ease, color 0.2s ease;
+        }
+        .list-item:hover {
+            transform: translateX(10px);
+            color: #800020;
+        }
+        .section-enter {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease-out;
+        }
+        .section-enter.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* Стили для табов (интегрированы в Tailwind-стиль) */
+        .tabs-container { max-width: 800px; margin: 2rem auto; }
+        .tabs { display: flex; justify-content: center; margin-bottom: 1rem; }
+        .tab-btn { 
+            padding: 0.75rem 1.5rem; 
+            background: white; 
+            border: 1px solid #EDE4D4; 
+            color: #800020; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            margin: 0 0.25rem;
+            border-radius: 0.5rem 0.5rem 0 0;
+        }
+        .tab-btn.active { 
+            background: #800020; 
+            color: white; 
+            box-shadow: 0 -2px 10px rgba(128, 0, 32, 0.2);
+        }
+        .tab-content { 
+            display: none; 
+            background: white; 
+            padding: 2rem; 
+            border: 1px solid #EDE4D4; 
+            border-top: none; 
+            border-radius: 0 0 0.5rem 0.5rem; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .tab-content.active { display: block; animation: fadeIn 0.5s ease-out; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-beige-100 via-beige-100 to-beige-200 text-gray-800 font-sans">
+    <!-- Шапка -->
+    <header class="bg-gradient-to-r from-burgundy-700 to-burgundy-600 text-white py-6 relative overflow-hidden">
+        <div class="absolute inset-0 bg-black opacity-10"></div>
+        <nav class="flex justify-center space-x-6 py-2 bg-burgundy-700/90 backdrop-blur-sm">
+    <a href="#tabs-container" class="text-white hover:text-beige-100 transition-colors px-3 py-1 rounded">Табы</a>
+    <a href="#specialties" class="text-white hover:text-beige-100 transition-colors px-3 py-1 rounded">Специальности</a>
+    <a href="#subjects" class="text-white hover:text-beige-100 transition-colors px-3 py-1 rounded">Предметы</a>
+</nav>
+        <div class="container mx-auto px-4 text-center relative z-10 animate-fade-in">
+            <h1 class="text-4xl md:text-5xl font-bold mb-2 glow-text animate-glow-pulse">Музыкальная школа №1</h1>
+            <p class="text-lg animate-pulse-soft">Ваш путь в мир музыки начинается здесь!</p>
+        </div>
+    </header>
+
+    <!-- Табы -->
+    <div class="tabs-container">
+        <div id="tabs-container" class="tabs-container"></div>
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="tab-1">О нас</button>
+            <button class="tab-btn" data-tab="tab-2">Отзывы</button>
+            <button class="tab-btn" data-tab="tab-3">Контакты</button>
+            <button class="tab-btn" data-tab="tab-4">Галерея</button>
+        </div>
+        <div class="tab-content active" id="tab-1">
+            <h3 class="text-2xl font-semibold text-burgundy-700 mb-4">О нас</h3>
+            <p>Музыкальная школа №1 — это ведущий центр музыкального образования в городе. Мы предлагаем профессиональное обучение с опытными преподавателями, современное оборудование и индивидуальный подход к каждому ученику. Основана в 1995 году, школа выпустила тысячи талантливых музыкантов.</p>
+            <ul class="mt-4 list-disc list-inside text-gray-600">
+                <li>Более 20 лет опыта</li>
+                <li>Квалифицированные педагоги</li>
+                <li>Регулярные концерты и мастер-классы</li>
+            </ul>
+        </div>
+        <div class="tab-content" id="tab-2">
+            <h3 class="text-2xl font-semibold text-burgundy-700 mb-4">Отзывы</h3>
+            <div class="space-y-4">
+                <blockquote class="border-l-4 border-burgundy-600 pl-4 italic">
+                    "Мой сын обожает уроки фортепиано! Преподавательница — просто волшебница. Рекомендую всем!" — Анна, мама ученика.
+                </blockquote>
+                <blockquote class="border-l-4 border-burgundy-600 pl-4 italic">
+                    "Школа помогла мне открыть в себе талант к гитаре. Атмосфера творчества и поддержки — супер!" — Максим, 15 лет.
+                </blockquote>
+                <blockquote class="border-l-4 border-burgundy-600 pl-4 italic">
+                    "Отличные общие предметы, такие как сольфеджио. Дети развиваются всесторонне." — Ольга, родитель.
+                </blockquote>
+            </div>
+        </div>
+        <div class="tab-content" id="tab-3">
+            <h3 class="text-2xl font-semibold text-burgundy-700 mb-4">Контакты</h3>
+            <p class="mb-4">Адрес: ул. Музыкальная, 1, г. Москва, 123456</p>
+            <p class="mb-4">Телефон: +7 (495) 123-45-67</p>
+            <p class="mb-4">Email: info@music-school1.ru</p>
+            <p class="mb-4">Часы работы: Пн—Пт: 9:00—20:00, Сб: 10:00—18:00</p>
+            
+            <!-- Draggable div -->
+            <div id="draggable" class="ui-widget-content" style="width:150px; padding:10px; margin: 1rem 0;">
+                <p>Перетащи меня! (Контакты школы)</p>
+            </div>
+            
+            <!-- Datepicker input -->
+            <label class="block mt-4 mb-2 text-sm font-bold text-burgundy-700">Выберите дату пробного урока:</label>
+            <input type="text" id="datepicker" placeholder="Кликни для выбора даты">
+            
+            <form class="space-y-4 max-w-md mt-4">
+                <input type="text" placeholder="Ваше имя" class="w-full p-2 border border-beige-200 rounded">
+                <input type="email" placeholder="Email" class="w-full p-2 border border-beige-200 rounded">
+                <textarea placeholder="Сообщение" rows="4" class="w-full p-2 border border-beige-200 rounded"></textarea>
+                <button type="submit" class="bg-burgundy-700 text-white px-4 py-2 rounded hover:bg-burgundy-600">Отправить</button>
+            </form>
+        </div>
+       </div>
+            <div class="tab-content" id="tab-4">
+            <h3 class="text-2xl font-semibold text-burgundy-700 mb-4 text-center">Галерея школы</h3>
+            <p class="text-center mb-6 text-gray-600">Фото с концертов, уроков и инструментов. Кликните для просмотра!</p>
+            <div id="gallery-grid" class="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <!-- Фото загрузятся динамически по API -->
+</div>
+        </div>
+            <!-- ВСТАВКА: Кнопка и blockquote для AJAX -->
+            <div class="mt-6 p-4 border border-beige-200 rounded-lg text-center">
+                <button id="loadQuote" class="bg-burgundy-700 text-white px-6 py-2 rounded hover:bg-burgundy-600 mb-4">Загрузить цитату</button>
+                <blockquote id="quote" class="text-gray-700 italic text-lg">
+                    <p>Здесь появится случайная цитата...</p>
+                    <cite class="not-italic font-semibold text-burgundy-700 block mt-2">— Автор</cite>
+                </blockquote>
+            </div>
+        </div> 
+    </div>
+    <!-- Основной контент -->
+    <main class="container mx-auto px-4 py-8">
+        <section class="mb-12 section-enter" id="specialties">
+            <h2 class="text-3xl font-bold text-burgundy-700 mb-6 text-center animate-slide-up">Какие специальности мы изучаем</h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-lg shadow-md p-6 border border-beige-200 card-hover">
+                    <h3 class="text-xl font-semibold text-burgundy-700 mb-2 glow-text">Фортепиано</h3>
+                    <p class="text-gray-600 mb-4">Классическое обучение игре на пианино для всех возрастов.</p>
+                    <div class="price-tag bg-burgundy-600 text-white px-4 py-2 rounded text-center font-bold transition-all duration-300">
+                        5000 руб/мес
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 border border-beige-200 card-hover">
+                    <h3 class="text-xl font-semibold text-burgundy-700 mb-2 glow-text">Скрипка</h3>
+                    <p class="text-gray-600 mb-4">Техника смычка и выразительная игра на струнных.</p>
+                    <div class="price-tag bg-burgundy-600 text-white px-4 py-2 rounded text-center font-bold transition-all duration-300">
+                        5500 руб/мес
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 border border-beige-200 card-hover">
+                    <h3 class="text-xl font-semibold text-burgundy-700 mb-2 glow-text">Гитара</h3>
+                    <p class="text-gray-600 mb-4">Акустика и электрогитара — от основ до импровизации.</p>
+                    <div class="price-tag bg-burgundy-600 text-white px-4 py-2 rounded text-center font-bold transition-all duration-300">
+                        4500 руб/мес
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12 section-enter" id="subjects">
+            <h2 class="text-3xl font-bold text-burgundy-700 mb-6 text-center animate-slide-up">Общие предметы для всех обучаемых</h2>
+            <div class="bg-white rounded-lg shadow-md p-8 border border-beige-200">
+                <ul class="grid md:grid-cols-2 gap-4 text-lg">
+                    <li class="flex items-center list-item">
+                        <span class="text-burgundy-700 mr-2">•</span>
+                        Сольфеджио (развитие слуха и ритма)
+                    </li>
+                    <li class="flex items-center list-item">
+                        <span class="text-burgundy-700 mr-2">•</span>
+                        Музыкальная теория (ноты, гармония)
+                    </li>
+                    <li class="flex items-center list-item">
+                        <span class="text-burgundy-700 mr-2">•</span>
+                        Ансамблевое музицирование (игра в группе)
+                    </li>
+                    <li class="flex items-center list-item">
+                        <span class="text-burgundy-700 mr-2">•</span>
+                        История музыки (знакомство с композиторами)
+                    </li>
+                </ul>
+                <p class="mt-4 text-gray-600 italic">Эти предметы включены в программу для всех учеников и помогают развивать всесторонние музыкальные навыки.</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Футер -->
+    <footer class="bg-gradient-to-r from-burgundy-700 to-burgundy-600 text-white py-4 text-center animate-fade-in">
+        <p>&copy; 2025 Музыкальная школа №1. Все права защищены.</p>
+    </footer>
+
+    <!-- Подключения скриптов -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
